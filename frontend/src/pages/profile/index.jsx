@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/router";
-
 import DashboardLayout from "@/layout/DashboardLayout";
 import UserLayout from "@/layout/userLayout";
 import Styles from "./index.module.css";
-
-import { BaseUrl, clientServer } from "@/config";
+import { clientServer } from "@/config";
 import { getAboutUser } from "@/config/redux/action/authAction";
 import { getAllPosts } from "@/config/redux/action/postAction";
 
@@ -39,7 +37,6 @@ export default function ProfilePage() {
   }, [authState.user]);
 
   useEffect(() => {
-    // ✅ Added null check for post.userId before accessing .username
     if (authState.user?.userId && postReducer.posts.length > 0) {
       const filteredPosts = postReducer.posts.filter(
         (post) =>
@@ -54,11 +51,7 @@ export default function ProfilePage() {
     const formData = new FormData();
     formData.append("profile_picture", file);
     formData.append("token", localStorage.getItem("token"));
-    await clientServer.post("/update_profile_picture", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
+    await clientServer.post("/update_profile_picture", formData);
     dispatch(getAboutUser({ token: localStorage.getItem("token") }));
   };
 
@@ -67,7 +60,6 @@ export default function ProfilePage() {
       token: localStorage.getItem("token"),
       name: userProfile.userId?.name,
     });
-
     await clientServer.post("/update_profile_data", {
       token: localStorage.getItem("token"),
       bio: userProfile.bio,
@@ -84,22 +76,18 @@ export default function ProfilePage() {
         {userProfile?.userId && (
           <div className={Styles.Container}>
             <div className={Styles.backDropContainer}>
-              <label
-                htmlFor="profilePictureUpload"
-                className={Styles.backDrop__overlay}
-              >
+              <label htmlFor="profilePictureUpload" className={Styles.backDrop__overlay}>
                 <p>Edit</p>
               </label>
               <input
-                onChange={(e) => {
-                  updateProfilePicture(e.target.files[0]);
-                }}
+                onChange={(e) => { updateProfilePicture(e.target.files[0]); }}
                 type="file"
                 id="profilePictureUpload"
                 style={{ display: "none" }}
               />
+              {/* ✅ Cloudinary full URL - no BaseUrl prefix */}
               <img
-                src={`${BaseUrl}/${userProfile?.userId?.profilePicture ?? ""}`}
+                src={userProfile?.userId?.profilePicture ?? ""}
                 alt="profile_img"
               />
             </div>
@@ -107,15 +95,7 @@ export default function ProfilePage() {
             <div className={Styles.profileContainer_details}>
               <div style={{ display: "flex", gap: "0.1rem" }}>
                 <div style={{ flex: "0.6" }}>
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      width: "fit-content",
-                      gap: "2em",
-                      marginBottom: "0.5em",
-                    }}
-                  >
+                  <div style={{ display: "flex", alignItems: "center", width: "fit-content", gap: "2em", marginBottom: "0.5em" }}>
                     <input
                       className={Styles.nameEdit}
                       type="text"
@@ -123,10 +103,7 @@ export default function ProfilePage() {
                       onChange={(e) => {
                         setUserProfile({
                           ...userProfile,
-                          userId: {
-                            ...userProfile.userId,
-                            name: e.target.value,
-                          },
+                          userId: { ...userProfile.userId, name: e.target.value },
                         });
                       }}
                     />
@@ -138,38 +115,21 @@ export default function ProfilePage() {
                   <div className={Styles.User_bio}>
                     <textarea
                       value={userProfile.bio ?? ""}
-                      onChange={(e) => {
-                        setUserProfile({ ...userProfile, bio: e.target.value });
-                      }}
-                      rows={Math.max(
-                        3,
-                        Math.ceil((userProfile.bio?.length ?? 0) / 80)
-                      )}
+                      onChange={(e) => { setUserProfile({ ...userProfile, bio: e.target.value }); }}
+                      rows={Math.max(3, Math.ceil((userProfile.bio?.length ?? 0) / 80))}
                     ></textarea>
                   </div>
 
                   <div className={Styles.workHistory}>
                     <h4>Work History</h4>
-                    <button
-                      className={Styles.addWorkButton}
-                      onClick={() => {
-                        setismodalopen(true);
-                      }}
-                    >
+                    <button className={Styles.addWorkButton} onClick={() => { setismodalopen(true); }}>
                       + Add Work
                     </button>
                     <div className={Styles.singleCard}>
                       {userProfile?.pastWork?.length > 0 ? (
                         userProfile.pastWork.map((work, index) => (
                           <div key={index} className={Styles.workHistoryCard}>
-                            <p
-                              style={{
-                                fontWeight: "bold",
-                                display: "flex",
-                                alignItems: "center",
-                                gap: "0.8rem",
-                              }}
-                            >
+                            <p style={{ fontWeight: "bold", display: "flex", alignItems: "center", gap: "0.8rem" }}>
                               {work.company} - {work.position}
                             </p>
                             {work.years !== 0 && <p>{work.years}</p>}
@@ -182,42 +142,23 @@ export default function ProfilePage() {
                   </div>
 
                   {userProfile !== authState.user && (
-                    <div
-                      onClick={() => {
-                        updateProfileData();
-                      }}
-                      className={Styles.updateBtn}
-                    >
+                    <div onClick={() => { updateProfileData(); }} className={Styles.updateBtn}>
                       Update
                     </div>
                   )}
                 </div>
 
-                <div
-                  style={{
-                    flex: "0.4",
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "center",
-                    textAlign: "center",
-                  }}
-                >
-                  <p>
-                    <b>Recent activity</b>
-                  </p>
+                <div style={{ flex: "0.4", display: "flex", flexDirection: "column", justifyContent: "center", textAlign: "center" }}>
+                  <p><b>Recent activity</b></p>
                   {userPosts.map((post) => (
                     <div key={post._id} className={Styles.postCard}>
                       <div className={Styles.card}>
                         <div className={Styles.cardProfileContainer}>
                           {post.media !== "" ? (
-                            <img
-                              src={`${BaseUrl}/${post.media}`}
-                              alt="image"
-                            />
+                            // ✅ Cloudinary full URL - no BaseUrl prefix
+                            <img src={post.media} alt="image" />
                           ) : (
-                            <div
-                              style={{ width: "3.4rem", height: "3.4rem" }}
-                            ></div>
+                            <div style={{ width: "3.4rem", height: "3.4rem" }}></div>
                           )}
                         </div>
                       </div>
@@ -230,44 +171,15 @@ export default function ProfilePage() {
         )}
 
         {isModalopen && (
-          <div
-            onClick={() => {
-              setismodalopen(false);
-            }}
-            className={Styles.commentsContainer}
-          >
-            <div
-              onClick={(e) => e.stopPropagation()}
-              className={Styles.allCommentsContainer}
-            >
-              <input
-                onChange={handleWorkChange}
-                name="company"
-                className={Styles.inputfield}
-                type="text"
-                placeholder="Enter Company"
-              />
-              <input
-                onChange={handleWorkChange}
-                className={Styles.inputfield}
-                name="position"
-                type="text"
-                placeholder="Enter position"
-              />
-              <input
-                onChange={handleWorkChange}
-                name="years"
-                className={Styles.inputfield}
-                type="number"
-                placeholder="years"
-              />
+          <div onClick={() => { setismodalopen(false); }} className={Styles.commentsContainer}>
+            <div onClick={(e) => e.stopPropagation()} className={Styles.allCommentsContainer}>
+              <input onChange={handleWorkChange} name="company" className={Styles.inputfield} type="text" placeholder="Enter Company" />
+              <input onChange={handleWorkChange} className={Styles.inputfield} name="position" type="text" placeholder="Enter position" />
+              <input onChange={handleWorkChange} name="years" className={Styles.inputfield} type="number" placeholder="years" />
               <div
                 className={Styles.updateBtn}
                 onClick={() => {
-                  setUserProfile({
-                    ...userProfile,
-                    pastWork: [...(userProfile.pastWork || []), inputData],
-                  });
+                  setUserProfile({ ...userProfile, pastWork: [...(userProfile.pastWork || []), inputData] });
                   setismodalopen(false);
                 }}
               >

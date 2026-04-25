@@ -1,4 +1,3 @@
-import { BaseUrl } from "@/config";
 import { getAllUsers } from "@/config/redux/action/authAction";
 import DashboardLayout from "@/layout/DashboardLayout";
 import UserLayout from "@/layout/userLayout";
@@ -13,9 +12,7 @@ export default function DiscoverPage() {
   const router = useRouter();
 
   useEffect(() => {
-    console.log("Checking profiles fetched:", authState.all_profiles_fetched);
     if (!authState.all_profiles_fetched) {
-      console.log("Dispatching getAllUsers()");
       dispatch(getAllUsers());
     }
   }, [authState.all_profiles_fetched, dispatch]);
@@ -26,24 +23,19 @@ export default function DiscoverPage() {
         <div style={{ margin: "1rem" }}>
           <h1>My DiscoverPage</h1>
           <div className={Styles.allUserProfile}>
-            {authState.all_profiles_fetched &&
-            Array.isArray(authState.all_users) ? (
+            {authState.all_profiles_fetched && Array.isArray(authState.all_users) ? (
               authState.all_users
-                // ✅ filter out profiles where userId is null
                 .filter((profile) => profile.userId !== null)
                 .map((profile) => (
                   <div
-                    onClick={() => {
-                      router.push(
-                        `/view_profile/${encodeURIComponent(profile.userId?.username)}`
-                      );
-                    }}
+                    onClick={() => { router.push(`/view_profile/${encodeURIComponent(profile.userId?.username)}`); }}
                     key={profile._id}
                     className={Styles.userCard}
                   >
+                    {/* ✅ Cloudinary full URL - no BaseUrl prefix */}
                     <img
                       className={Styles.userCard_img}
-                      src={`${BaseUrl}/${profile.userId?.profilePicture ?? ""}`}
+                      src={profile.userId?.profilePicture ?? ""}
                       alt="profile img"
                     />
                     <div>

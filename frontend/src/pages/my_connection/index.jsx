@@ -4,7 +4,6 @@ import UserLayout from "@/layout/userLayout";
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Styles from "./index.module.css";
-import { BaseUrl } from "@/config";
 import { useRouter } from "next/router";
 
 export default function MyConnectionPage() {
@@ -23,33 +22,13 @@ export default function MyConnectionPage() {
           <h4>Pending Requests</h4>
           {authState.connectionRequest?.length > 0 ? (
             authState.connectionRequest
-              // ✅ filter out null userId before mapping
-              .filter(
-                (connection) =>
-                  connection.userId !== null &&
-                  connection.status_accepted == null
-              )
+              .filter((connection) => connection.userId !== null && connection.status_accepted == null)
               .map((conn, index) => (
-                <div
-                  onClick={() => {
-                    router.push(`/view_profile/${conn.userId?.username}`);
-                  }}
-                  className={Styles.userCard}
-                  key={index}
-                >
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "1.2rem",
-                      padding: "0.5rem",
-                    }}
-                  >
+                <div onClick={() => { router.push(`/view_profile/${conn.userId?.username}`); }} className={Styles.userCard} key={index}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "1.2rem", padding: "0.5rem" }}>
                     <div className={Styles.profilePicture}>
-                      <img
-                        src={`${BaseUrl}/${conn.userId?.profilePicture ?? ""}`}
-                        alt="profile image"
-                      />
+                      {/* ✅ Cloudinary full URL - no BaseUrl prefix */}
+                      <img src={conn.userId?.profilePicture ?? ""} alt="profile image" />
                     </div>
                     <div className={Styles.userInfo}>
                       <h2>{conn.userId?.name ?? "Deleted User"}</h2>
@@ -59,18 +38,8 @@ export default function MyConnectionPage() {
                       <button
                         onClick={async (e) => {
                           e.stopPropagation();
-                          await dispatch(
-                            AcceptConnection({
-                              connectionId: conn._id,
-                              token: localStorage.getItem("token"),
-                              action: "accept",
-                            })
-                          );
-                          dispatch(
-                            getMyconnectionRequests({
-                              token: localStorage.getItem("token"),
-                            })
-                          );
+                          await dispatch(AcceptConnection({ connectionId: conn._id, token: localStorage.getItem("token"), action: "accept" }));
+                          dispatch(getMyconnectionRequests({ token: localStorage.getItem("token") }));
                         }}
                         className={Styles.connectbtn}
                       >
@@ -87,33 +56,13 @@ export default function MyConnectionPage() {
           <h4>Accepted Connections</h4>
           {authState.connectionRequest?.length > 0 &&
             authState.connectionRequest
-              // ✅ filter out null userId before mapping
-              .filter(
-                (connection) =>
-                  connection.userId !== null &&
-                  connection.status_accepted != null
-              )
+              .filter((connection) => connection.userId !== null && connection.status_accepted != null)
               .map((conn, index) => (
-                <div
-                  onClick={() => {
-                    router.push(`/view_profile/${conn.userId?.username}`);
-                  }}
-                  className={Styles.userCard}
-                  key={index}
-                >
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "1.2rem",
-                      padding: "0.5rem",
-                    }}
-                  >
+                <div onClick={() => { router.push(`/view_profile/${conn.userId?.username}`); }} className={Styles.userCard} key={index}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "1.2rem", padding: "0.5rem" }}>
                     <div className={Styles.profilePicture}>
-                      <img
-                        src={`${BaseUrl}/${conn.userId?.profilePicture ?? ""}`}
-                        alt="profile image"
-                      />
+                      {/* ✅ Cloudinary full URL - no BaseUrl prefix */}
+                      <img src={conn.userId?.profilePicture ?? ""} alt="profile image" />
                     </div>
                     <div className={Styles.userInfo}>
                       <h2>{conn.userId?.name ?? "Deleted User"}</h2>

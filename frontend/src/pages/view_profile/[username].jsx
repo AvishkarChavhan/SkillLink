@@ -1,4 +1,4 @@
-import { BaseUrl, clientServer } from "@/config";
+import { clientServer } from "@/config";
 import DashboardLayout from "@/layout/DashboardLayout";
 import UserLayout from "@/layout/userLayout";
 import React, { useEffect, useState } from "react";
@@ -6,11 +6,7 @@ import Styles from "./index.module.css";
 import { useRouter } from "next/router";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllPosts } from "@/config/redux/action/postAction";
-import {
-  getConnectionsRequest,
-  getMyconnectionRequests,
-  sendConnectionRequest,
-} from "@/config/redux/action/authAction";
+import { getConnectionsRequest, getMyconnectionRequests, sendConnectionRequest } from "@/config/redux/action/authAction";
 
 export default function ViewProfilePage({ userProfile }) {
   const router = useRouter();
@@ -23,20 +19,13 @@ export default function ViewProfilePage({ userProfile }) {
 
   const getUsersPost = async () => {
     await dispatch(getAllPosts());
-    await dispatch(
-      getConnectionsRequest({ token: localStorage.getItem("token") })
-    );
-    await dispatch(
-      getMyconnectionRequests({ token: localStorage.getItem("token") })
-    );
+    await dispatch(getConnectionsRequest({ token: localStorage.getItem("token") }));
+    await dispatch(getMyconnectionRequests({ token: localStorage.getItem("token") }));
   };
 
   useEffect(() => {
-    // ✅ Added null check for post.userId before accessing .username
     const posts = postReducer.posts.filter(
-      (post) =>
-        post.userId !== null &&
-        post.userId.username === router.query.username
+      (post) => post.userId !== null && post.userId.username === router.query.username
     );
     setUserPosts(posts);
   }, [postReducer.posts, router.query.username]);
@@ -47,20 +36,15 @@ export default function ViewProfilePage({ userProfile }) {
 
     const isConnected = connections.find(
       (conn) =>
-        (conn.userId?._id === viewedUserId ||
-          conn.connectionId?._id === viewedUserId) &&
+        (conn.userId?._id === viewedUserId || conn.connectionId?._id === viewedUserId) &&
         conn.status_accepted
     );
 
     const isPending =
-      connectionRequest.find(
-        (conn) =>
-          conn.connectionId?._id === viewedUserId && !conn.status_accepted
-      ) ||
+      connectionRequest.find((conn) => conn.connectionId?._id === viewedUserId && !conn.status_accepted) ||
       connections.find(
         (conn) =>
-          (conn.userId?._id === viewedUserId ||
-            conn.connectionId?._id === viewedUserId) &&
+          (conn.userId?._id === viewedUserId || conn.connectionId?._id === viewedUserId) &&
           !conn.status_accepted
       );
 
@@ -88,45 +72,28 @@ export default function ViewProfilePage({ userProfile }) {
       <DashboardLayout>
         <div className={Styles.Container}>
           <div className={Styles.backDropContainer}>
-            <img
-              src={`${BaseUrl}/${userProfile.userId?.profilePicture ?? ""}`}
-              alt="profile_img"
-            />
+            {/* ✅ Cloudinary full URL - no BaseUrl prefix */}
+            <img src={userProfile.userId?.profilePicture ?? ""} alt="profile_img" />
           </div>
 
           <div className={Styles.profileContainer_details}>
             <div style={{ display: "flex", gap: "0.1rem" }}>
               <div style={{ flex: "0.6" }}>
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    width: "fit-content",
-                    gap: "2em",
-                    marginBottom: "0.5em",
-                  }}
-                >
+                <div style={{ display: "flex", alignItems: "center", width: "fit-content", gap: "2em", marginBottom: "0.5em" }}>
                   <h4>{userProfile.userId?.name ?? "Unknown User"}</h4>
                 </div>
 
                 {connectionStatus === "connected" && (
                   <button className={Styles.connected_button}>Connected</button>
                 )}
-
                 {connectionStatus === "pending" && (
                   <button className={Styles.connected_button}>Pending</button>
                 )}
-
                 {connectionStatus === "none" && (
                   <button
                     onClick={async () => {
                       setIsSending(true);
-                      await dispatch(
-                        sendConnectionRequest({
-                          token: localStorage.getItem("token"),
-                          connectionId: userProfile.userId?._id,
-                        })
-                      );
+                      await dispatch(sendConnectionRequest({ token: localStorage.getItem("token"), connectionId: userProfile.userId?._id }));
                       await getUsersPost();
                       setIsSending(false);
                     }}
@@ -138,26 +105,14 @@ export default function ViewProfilePage({ userProfile }) {
 
                 <div
                   onClick={async () => {
-                    const response = await clientServer.get(
-                      `/user/download_resume?id=${userProfile.userId?._id}`
-                    );
-                    window.open(`${BaseUrl}/${response.data.message}`, "_blank");
+                    const response = await clientServer.get(`/user/download_resume?id=${userProfile.userId?._id}`);
+                    // ✅ PDF still uses BaseUrl since it's generated on server
+                    window.open(`${clientServer.defaults.baseURL}/${response.data.message}`, "_blank");
                   }}
                   style={{ cursor: "pointer" }}
                 >
-                  <svg
-                    style={{ width: "1.5rem" }}
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth="1.5"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M7.5 7.5h-.75A2.25 2.25 0 0 0 4.5 9.75v7.5a2.25 2.25 0 0 0 2.25 2.25h7.5a2.25 2.25 0 0 0 2.25-2.25v-7.5a2.25 2.25 0 0 0-2.25-2.25h-.75m-6 3.75 3 3m0 0 3-3m-3 3V1.5m6 9h.75a2.25 2.25 0 0 1 2.25 2.25v7.5a2.25 2.25 0 0 1-2.25 2.25h-7.5a2.25 2.25 0 0 1-2.25-2.25v-.75"
-                    />
+                  <svg style={{ width: "1.5rem" }} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 7.5h-.75A2.25 2.25 0 0 0 4.5 9.75v7.5a2.25 2.25 0 0 0 2.25 2.25h7.5a2.25 2.25 0 0 0 2.25-2.25v-7.5a2.25 2.25 0 0 0-2.25-2.25h-.75m-6 3.75 3 3m0 0 3-3m-3 3V1.5m6 9h.75a2.25 2.25 0 0 1 2.25 2.25v7.5a2.25 2.25 0 0 1-2.25 2.25h-7.5a2.25 2.25 0 0 1-2.25-2.25v-.75" />
                   </svg>
                 </div>
 
@@ -170,14 +125,7 @@ export default function ViewProfilePage({ userProfile }) {
                   <div className={Styles.singleCard}>
                     {userProfile.pastWork?.map((work, index) => (
                       <div key={index} className={Styles.workHistoryCard}>
-                        <p
-                          style={{
-                            fontWeight: "bold",
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "0.8rem",
-                          }}
-                        >
+                        <p style={{ fontWeight: "bold", display: "flex", alignItems: "center", gap: "0.8rem" }}>
                           {work.company} - {work.position}
                         </p>
                         {work.years !== 0 ? <p>{work.years}</p> : <p></p>}
@@ -187,31 +135,17 @@ export default function ViewProfilePage({ userProfile }) {
                 </div>
               </div>
 
-              <div
-                style={{
-                  flex: "0.4",
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "center",
-                  textAlign: "center",
-                }}
-              >
-                <p>
-                  <b>Recent activity</b>
-                </p>
+              <div style={{ flex: "0.4", display: "flex", flexDirection: "column", justifyContent: "center", textAlign: "center" }}>
+                <p><b>Recent activity</b></p>
                 {userPosts.map((post) => (
                   <div key={post._id} className={Styles.postCard}>
                     <div className={Styles.card}>
                       <div className={Styles.cardProfileContainer}>
                         {post.media !== "" ? (
-                          <img
-                            src={`${BaseUrl}/${post.media}`}
-                            alt="image"
-                          />
+                          // ✅ Cloudinary full URL - no BaseUrl prefix
+                          <img src={post.media} alt="image" />
                         ) : (
-                          <div
-                            style={{ width: "3.4rem", height: "3.4rem" }}
-                          ></div>
+                          <div style={{ width: "3.4rem", height: "3.4rem" }}></div>
                         )}
                       </div>
                     </div>
@@ -229,28 +163,13 @@ export default function ViewProfilePage({ userProfile }) {
 export async function getServerSideProps(context) {
   try {
     const { username } = context.query;
-    const response = await clientServer.get(
-      "/user/get_profile_based_on_username",
-      {
-        params: { username },
-      }
-    );
-
+    const response = await clientServer.get("/user/get_profile_based_on_username", { params: { username } });
     const profile = response.data.userProfile;
     const sanitizedProfile = JSON.parse(
       JSON.stringify(profile, (_, value) => (value === undefined ? null : value))
     );
-
-    return {
-      props: {
-        userProfile: sanitizedProfile,
-      },
-    };
+    return { props: { userProfile: sanitizedProfile } };
   } catch (error) {
-    return {
-      props: {
-        userProfile: null,
-      },
-    };
+    return { props: { userProfile: null } };
   }
 }
