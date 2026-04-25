@@ -23,15 +23,13 @@ export const createPost = createAsyncThunk(
 
       formData.append("body", body);
 
-      // ✅ Only append file if it actually exists
       if (file) {
         formData.append("media", file);
       }
 
       const response = await clientServer.post("/post", formData, {
         headers: {
-          "Content-Type": "multipart/form-data",
-          token: token, // ✅ token sent as header, backend reads req.headers.token
+          token: token, // ✅ removed Content-Type, axios handles it automatically
         },
       });
 

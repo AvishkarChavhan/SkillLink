@@ -16,30 +16,27 @@ export const activecheck = async (req, res) => {
 
 export const createPost = async (req, res) => {
     try {
-        const token  = req.headers.token;
-       // console.log("this is the route token ",token)
+        const token = req.headers.token;
         const user = await User.findOne({ token });
         if (!user) {
-            return res.status(404).json({ message: "User not found" })
+            return res.status(404).json({ message: "User not found" });
         }
-       // console.log(req.body)
 
-        console.log()
         const post = new Post({
             userId: user._id,
             body: req.body.body,
-            media: req.file != undefined ? req.file.filename : "",
-            fileType: req.file != undefined ? req.file.mimetype.split("/")[1] : "",
+            // ✅ Cloudinary returns full URL in req.file.path
+            media: req.file ? req.file.path : "",
+            fileType: req.file ? req.file.mimetype.split("/")[1] : "",
         });
 
         await post.save();
         return res.status(200).json({ message: "Post created successfully" });
 
-
     } catch (err) {
         return res.status(500).json({ message: err.message });
     }
-}
+};
 
 export const getAllPosts = async (req, res) => {
     try {
