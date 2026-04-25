@@ -18,13 +18,13 @@ export default function ProfilePage() {
 
   const [userProfile, setUserProfile] = useState({});
   const [userPosts, setUserPosts] = useState([]);
-  const [isModalopen,setismodalopen]=useState(false);
-  const [inputData,setinputData]=useState({company:"",position:"",years:""});
+  const [isModalopen, setismodalopen] = useState(false);
+  const [inputData, setinputData] = useState({ company: "", position: "", years: "" });
 
-  const handleWorkChange=(e)=>{
-      const {name ,value}=e.target;
-      setinputData({...inputData,[name]:value})
-  }
+  const handleWorkChange = (e) => {
+    const { name, value } = e.target;
+    setinputData({ ...inputData, [name]: value });
+  };
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -39,9 +39,12 @@ export default function ProfilePage() {
   }, [authState.user]);
 
   useEffect(() => {
-    if (authState.user?.user && postReducer.posts.length > 0) {
+    // ✅ Added null check for post.userId before accessing .username
+    if (authState.user?.userId && postReducer.posts.length > 0) {
       const filteredPosts = postReducer.posts.filter(
-        (post) => post.userId.username === authState.user.user.userId.username
+        (post) =>
+          post.userId !== null &&
+          post.userId?.username === authState.user.userId.username
       );
       setUserPosts(filteredPosts);
     }
@@ -51,25 +54,21 @@ export default function ProfilePage() {
     const formData = new FormData();
     formData.append("profile_picture", file);
     formData.append("token", localStorage.getItem("token"));
-    const response = await clientServer.post(
-      "/update_profile_picture",
-      formData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      }
-    );
+    await clientServer.post("/update_profile_picture", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
     dispatch(getAboutUser({ token: localStorage.getItem("token") }));
   };
 
   const updateProfileData = async () => {
-    const request = await clientServer.post("/user_update", {
+    await clientServer.post("/user_update", {
       token: localStorage.getItem("token"),
-      name: userProfile.userId.name,
+      name: userProfile.userId?.name,
     });
 
-    const reponse = await clientServer.post("/update_profile_data", {
+    await clientServer.post("/update_profile_data", {
       token: localStorage.getItem("token"),
       bio: userProfile.bio,
       currentPost: userProfile.currentPost,
@@ -100,7 +99,7 @@ export default function ProfilePage() {
                 style={{ display: "none" }}
               />
               <img
-                src={`${BaseUrl}/${userProfile?.userId?.profilePicture}`}
+                src={`${BaseUrl}/${userProfile?.userId?.profilePicture ?? ""}`}
                 alt="profile_img"
               />
             </div>
@@ -120,7 +119,7 @@ export default function ProfilePage() {
                     <input
                       className={Styles.nameEdit}
                       type="text"
-                      value={userProfile?.userId?.name}
+                      value={userProfile?.userId?.name ?? ""}
                       onChange={(e) => {
                         setUserProfile({
                           ...userProfile,
@@ -130,19 +129,22 @@ export default function ProfilePage() {
                           },
                         });
                       }}
-                    ></input>
+                    />
                     <p style={{ color: "grey" }}>
-                      <i>@{userProfile?.userId?.username}</i>
+                      <i>@{userProfile?.userId?.username ?? ""}</i>
                     </p>
                   </div>
 
                   <div className={Styles.User_bio}>
                     <textarea
-                      value={userProfile.bio}
+                      value={userProfile.bio ?? ""}
                       onChange={(e) => {
                         setUserProfile({ ...userProfile, bio: e.target.value });
                       }}
-                      rows={Math.max(3, Math.ceil(userProfile.bio.length / 80))}
+                      rows={Math.max(
+                        3,
+                        Math.ceil((userProfile.bio?.length ?? 0) / 80)
+                      )}
                     ></textarea>
                   </div>
 
@@ -151,8 +153,7 @@ export default function ProfilePage() {
                     <button
                       className={Styles.addWorkButton}
                       onClick={() => {
-                        // Your logic to add a new work entry
-                        setismodalopen(true)
+                        setismodalopen(true);
                       }}
                     >
                       + Add Work
@@ -179,7 +180,8 @@ export default function ProfilePage() {
                       )}
                     </div>
                   </div>
-                  {userProfile != authState.user && (
+
+                  {userProfile !== authState.user && (
                     <div
                       onClick={() => {
                         updateProfileData();
@@ -208,13 +210,13 @@ export default function ProfilePage() {
                       <div className={Styles.card}>
                         <div className={Styles.cardProfileContainer}>
                           {post.media !== "" ? (
-                            <img src={`${BaseUrl}/${post.media}`} alt="image" />
+                            <img
+                              src={`${BaseUrl}/${post.media}`}
+                              alt="image"
+                            />
                           ) : (
                             <div
-                              style={{
-                                width: "3.4rem",
-                                height: "3.4rem",
-                              }}
+                              style={{ width: "3.4rem", height: "3.4rem" }}
                             ></div>
                           )}
                         </div>
@@ -226,7 +228,8 @@ export default function ProfilePage() {
             </div>
           </div>
         )}
-        {isModalopen  && (
+
+        {isModalopen && (
           <div
             onClick={() => {
               setismodalopen(false);
@@ -236,31 +239,41 @@ export default function ProfilePage() {
             <div
               onClick={(e) => e.stopPropagation()}
               className={Styles.allCommentsContainer}
-            ><input
-                    onChange={handleWorkChange}
-                    name="company"
-                    className={Styles.inputfield}
-                    type="text"
-                    placeholder="Enter Company"
-                  />
-                  <input
-                    onChange={handleWorkChange}
-                    className={Styles.inputfield}
-                    name="position"
-                    type="text"
-                    placeholder="Enter postition"
-                  />
-                  <input
-                    onChange={handleWorkChange}
-                    name="years"
-                    className={Styles.inputfield}
-                    type="number"
-                    placeholder="years"
-                  />
-                  <div className={Styles.updateBtn} onClick={()=>{
-                    setUserProfile({...userProfile,pastWork:[...(userProfile.pastWork ||[]),inputData]})
-                    setismodalopen(false);
-                  }}>Add work</div></div>
+            >
+              <input
+                onChange={handleWorkChange}
+                name="company"
+                className={Styles.inputfield}
+                type="text"
+                placeholder="Enter Company"
+              />
+              <input
+                onChange={handleWorkChange}
+                className={Styles.inputfield}
+                name="position"
+                type="text"
+                placeholder="Enter position"
+              />
+              <input
+                onChange={handleWorkChange}
+                name="years"
+                className={Styles.inputfield}
+                type="number"
+                placeholder="years"
+              />
+              <div
+                className={Styles.updateBtn}
+                onClick={() => {
+                  setUserProfile({
+                    ...userProfile,
+                    pastWork: [...(userProfile.pastWork || []), inputData],
+                  });
+                  setismodalopen(false);
+                }}
+              >
+                Add work
+              </div>
+            </div>
           </div>
         )}
       </DashboardLayout>

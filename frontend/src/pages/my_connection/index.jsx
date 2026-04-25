@@ -23,11 +23,16 @@ export default function MyConnectionPage() {
           <h4>Pending Requests</h4>
           {authState.connectionRequest?.length > 0 ? (
             authState.connectionRequest
-              .filter((connection) => connection.status_accepted == null)
+              // ✅ filter out null userId before mapping
+              .filter(
+                (connection) =>
+                  connection.userId !== null &&
+                  connection.status_accepted == null
+              )
               .map((conn, index) => (
                 <div
                   onClick={() => {
-                    router.push(`/view_profile/${conn.userId.username}`);
+                    router.push(`/view_profile/${conn.userId?.username}`);
                   }}
                   className={Styles.userCard}
                   key={index}
@@ -42,27 +47,30 @@ export default function MyConnectionPage() {
                   >
                     <div className={Styles.profilePicture}>
                       <img
-                        src={`${BaseUrl}/${conn.userId.profilePicture}`}
+                        src={`${BaseUrl}/${conn.userId?.profilePicture ?? ""}`}
                         alt="profile image"
                       />
                     </div>
                     <div className={Styles.userInfo}>
-                      <h2>{conn.userId.name}</h2>
-                      <p>@{conn.userId.username}</p>
-                      
+                      <h2>{conn.userId?.name ?? "Deleted User"}</h2>
+                      <p>@{conn.userId?.username ?? "unknown"}</p>
                     </div>
                     <div>
                       <button
-                        onClick={async(e) => {
+                        onClick={async (e) => {
                           e.stopPropagation();
-                         await dispatch(
+                          await dispatch(
                             AcceptConnection({
                               connectionId: conn._id,
                               token: localStorage.getItem("token"),
                               action: "accept",
                             })
                           );
-                          dispatch(getMyconnectionRequests({ token: localStorage.getItem("token") }))
+                          dispatch(
+                            getMyconnectionRequests({
+                              token: localStorage.getItem("token"),
+                            })
+                          );
                         }}
                         className={Styles.connectbtn}
                       >
@@ -79,11 +87,16 @@ export default function MyConnectionPage() {
           <h4>Accepted Connections</h4>
           {authState.connectionRequest?.length > 0 &&
             authState.connectionRequest
-              .filter((connection) => connection.status_accepted != null)
+              // ✅ filter out null userId before mapping
+              .filter(
+                (connection) =>
+                  connection.userId !== null &&
+                  connection.status_accepted != null
+              )
               .map((conn, index) => (
                 <div
                   onClick={() => {
-                    router.push(`/view_profile/${conn.userId.username}`);
+                    router.push(`/view_profile/${conn.userId?.username}`);
                   }}
                   className={Styles.userCard}
                   key={index}
@@ -98,13 +111,13 @@ export default function MyConnectionPage() {
                   >
                     <div className={Styles.profilePicture}>
                       <img
-                        src={`${BaseUrl}/${conn.userId.profilePicture}`}
+                        src={`${BaseUrl}/${conn.userId?.profilePicture ?? ""}`}
                         alt="profile image"
                       />
                     </div>
                     <div className={Styles.userInfo}>
-                      <h2>{conn.userId.name}</h2>
-                      <p>@{conn.userId.username}</p>
+                      <h2>{conn.userId?.name ?? "Deleted User"}</h2>
+                      <p>@{conn.userId?.username ?? "unknown"}</p>
                     </div>
                   </div>
                 </div>

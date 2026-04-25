@@ -19,7 +19,7 @@ export default function ViewProfilePage({ userProfile }) {
   const authState = useSelector((state) => state.auth);
   const [userPosts, setUserPosts] = useState([]);
   const [isSending, setIsSending] = useState(false);
-  const [connectionStatus, setConnectionStatus] = useState("none"); // "none", "pending", "connected"
+  const [connectionStatus, setConnectionStatus] = useState("none");
 
   const getUsersPost = async () => {
     await dispatch(getAllPosts());
@@ -32,11 +32,14 @@ export default function ViewProfilePage({ userProfile }) {
   };
 
   useEffect(() => {
+    // ✅ Added null check for post.userId before accessing .username
     const posts = postReducer.posts.filter(
-      (post) => post.userId.username === router.query.username
+      (post) =>
+        post.userId !== null &&
+        post.userId.username === router.query.username
     );
     setUserPosts(posts);
-  }, [postReducer.posts]);
+  }, [postReducer.posts, router.query.username]);
 
   useEffect(() => {
     const viewedUserId = userProfile?.userId?._id;
@@ -44,19 +47,20 @@ export default function ViewProfilePage({ userProfile }) {
 
     const isConnected = connections.find(
       (conn) =>
-        (conn.userId._id === viewedUserId ||
-          conn.connectionId._id === viewedUserId) &&
+        (conn.userId?._id === viewedUserId ||
+          conn.connectionId?._id === viewedUserId) &&
         conn.status_accepted
     );
 
     const isPending =
       connectionRequest.find(
-        (conn) => conn.connectionId._id === viewedUserId && !conn.status_accepted
+        (conn) =>
+          conn.connectionId?._id === viewedUserId && !conn.status_accepted
       ) ||
       connections.find(
         (conn) =>
-          (conn.userId._id === viewedUserId ||
-            conn.connectionId._id === viewedUserId) &&
+          (conn.userId?._id === viewedUserId ||
+            conn.connectionId?._id === viewedUserId) &&
           !conn.status_accepted
       );
 
@@ -85,7 +89,7 @@ export default function ViewProfilePage({ userProfile }) {
         <div className={Styles.Container}>
           <div className={Styles.backDropContainer}>
             <img
-              src={`${BaseUrl}/${userProfile.userId.profilePicture}`}
+              src={`${BaseUrl}/${userProfile.userId?.profilePicture ?? ""}`}
               alt="profile_img"
             />
           </div>
@@ -102,8 +106,9 @@ export default function ViewProfilePage({ userProfile }) {
                     marginBottom: "0.5em",
                   }}
                 >
-                  <h4>{userProfile.userId.name}</h4>
+                  <h4>{userProfile.userId?.name ?? "Unknown User"}</h4>
                 </div>
+
                 {connectionStatus === "connected" && (
                   <button className={Styles.connected_button}>Connected</button>
                 )}
@@ -119,7 +124,7 @@ export default function ViewProfilePage({ userProfile }) {
                       await dispatch(
                         sendConnectionRequest({
                           token: localStorage.getItem("token"),
-                          connectionId: userProfile.userId._id,
+                          connectionId: userProfile.userId?._id,
                         })
                       );
                       await getUsersPost();
@@ -134,7 +139,7 @@ export default function ViewProfilePage({ userProfile }) {
                 <div
                   onClick={async () => {
                     const response = await clientServer.get(
-                      `/user/download_resume?id=${userProfile.userId._id}`
+                      `/user/download_resume?id=${userProfile.userId?._id}`
                     );
                     window.open(`${BaseUrl}/${response.data.message}`, "_blank");
                   }}
@@ -163,7 +168,7 @@ export default function ViewProfilePage({ userProfile }) {
                 <div className={Styles.workHistory}>
                   <h4>Work History</h4>
                   <div className={Styles.singleCard}>
-                    {userProfile.pastWork.map((work, index) => (
+                    {userProfile.pastWork?.map((work, index) => (
                       <div key={index} className={Styles.workHistoryCard}>
                         <p
                           style={{
@@ -181,6 +186,7 @@ export default function ViewProfilePage({ userProfile }) {
                   </div>
                 </div>
               </div>
+
               <div
                 style={{
                   flex: "0.4",
@@ -198,9 +204,14 @@ export default function ViewProfilePage({ userProfile }) {
                     <div className={Styles.card}>
                       <div className={Styles.cardProfileContainer}>
                         {post.media !== "" ? (
-                          <img src={`${BaseUrl}/${post.media}`} alt="image" />
+                          <img
+                            src={`${BaseUrl}/${post.media}`}
+                            alt="image"
+                          />
                         ) : (
-                          <div style={{ width: "3.4rem", height: "3.4rem" }}></div>
+                          <div
+                            style={{ width: "3.4rem", height: "3.4rem" }}
+                          ></div>
                         )}
                       </div>
                     </div>
