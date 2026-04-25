@@ -99,7 +99,7 @@ export const get_comments_by_posts=async (req,res)=>{
         console.log(post_id)
         const post=await Post.findOne({_id:post_id})
         if(!post)return res.status(404).json({message:"post not found"})
-            const comments=await Comment.find({postId:post_id}).populate('userId',"username name")
+            const comments=await Comment.find({postId:post_id}).populate('userId',"username name profilePicture")
 
         return res.json(comments.reverse())
 
