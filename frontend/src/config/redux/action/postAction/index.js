@@ -20,19 +20,15 @@ export const createPost = createAsyncThunk(
       const { file, body } = userData;
       const formData = new FormData();
       const token = localStorage.getItem("token");
-
       formData.append("body", body);
-
       if (file) {
         formData.append("media", file);
       }
-
       const response = await clientServer.post("/post", formData, {
         headers: {
-          token: token, // ✅ removed Content-Type, axios handles it automatically
+          token: token,
         },
       });
-
       if (response.status === 200) {
         return thunkAPI.fulfillWithValue("Post Uploaded");
       } else {
@@ -65,9 +61,15 @@ export const incrementPostLike = createAsyncThunk(
   "post/incrementLikes",
   async (post, thunkAPI) => {
     try {
-      const response = await clientServer.post("/increment_like", {
-        post_id: post.post_id,
-      });
+      const response = await clientServer.post(
+        "/increment_like",
+        { post_id: post.post_id },
+        {
+          headers: {
+            token: localStorage.getItem("token"), // ✅ send token for like check
+          },
+        }
+      );
       return thunkAPI.fulfillWithValue(response.data);
     } catch (err) {
       return thunkAPI.rejectWithValue(err.response.data);
@@ -106,6 +108,24 @@ export const postComment = createAsyncThunk(
       return thunkAPI.fulfillWithValue(response.data);
     } catch (err) {
       return thunkAPI.rejectWithValue("something went wrong");
+    }
+  }
+);
+
+// ✅ new delete comment action
+export const deleteComment = createAsyncThunk(
+  "post/deleteComment",
+  async (comment_id, thunkAPI) => {
+    try {
+      const response = await clientServer.delete("/delete_comment", {
+        data: {
+          token: localStorage.getItem("token"),
+          comment_id,
+        },
+      });
+      return thunkAPI.fulfillWithValue(response.data);
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.response.data);
     }
   }
 );
