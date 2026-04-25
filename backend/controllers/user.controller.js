@@ -1,6 +1,7 @@
 import User from "../models/users.model.js";
 import Profile from "../models/profile.model.js";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
+
 import crypto from "crypto";
 import PDFdocument from "pdfkit";
 import path from "path";

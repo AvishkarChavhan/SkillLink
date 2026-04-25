@@ -2,8 +2,8 @@ import User from "../models/users.model.js";
 import Profile from "../models/profile.model.js";
 import Post from "../models/posts.model.js";
 import Comment from "../models/comments.model.js";
-import bcrypt from "bcrypt";
-import multer from "multer"
+import bcrypt from "bcryptjs";
+import multer from "multer";
 
 
 
