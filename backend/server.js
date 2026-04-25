@@ -4,15 +4,21 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import postsRoutes from "./routes/posts.routes.js";
 import UserRoutes from "./routes/user.routes.js";
+import fs from "fs";
 
 dotenv.config();
 
 const app = express();
 
+// ✅ Create uploads folder if it doesn't exist
+if (!fs.existsSync("uploads")) {
+  fs.mkdirSync("uploads");
+}
+
 app.use(cors({
     origin: ["https://skill-link-psi-gules.vercel.app", "http://localhost:3000"],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+    allowedHeaders: ["Content-Type", "Authorization", "token"], // ✅ added "token" header
     credentials: true
 }));
 
