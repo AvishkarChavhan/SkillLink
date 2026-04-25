@@ -1,0 +1,114 @@
+.homeContainer{
+    display: flex;
+}
+.homeContainer>div:nth-child(odd){
+    flex: 0.2;
+}
+.homeContainer>div:nth-child(even){
+    flex: 0.6;
+}
+.homeContainer_leftBar{
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    align-items: start;
+}
+.sideBarOptions{
+    display: flex;
+    align-items: center;
+    font-size: 1rem;
+    gap: 1rem;
+    width: 80%;
+    min-width: 80%;
+    max-width: 80%;
+    margin: 0 auto;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.sideBarOptions:hover{
+    transform: scale(1.03);
+}
+.sideBarOptions>svg{
+    height: 1.3rem;
+    min-width: fit-content;
+}
+
+/* ✅ TOP PROFILES SECTION */
+.homeContainer_extraContainer{
+    color: black;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+.homeContainer_extraContainer h1{
+    font-size: 1rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 0.4rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+.extraContainer_profiles{
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.5rem 0.7rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: repeating-linear-gradient(
+        135deg,
+        rgba(22, 103, 196, 0.06) 0px,
+        rgba(22, 103, 196, 0.06) 2px,
+        transparent 2px,
+        transparent 12px
+    );
+    background-color: rgba(22, 103, 196, 0.04);
+    border-left: 3px solid rgba(22, 103, 196, 0.4);
+}
+.extraContainer_profiles:hover{
+    background-color: rgba(22, 103, 196, 0.1);
+    border-left: 3px solid rgba(22, 103, 196, 0.9);
+    transform: translateX(3px);
+}
+.extraContainer_profiles p{
+    font-size: 0.88rem;
+    font-weight: 500;
+    color: #222;
+    margin: 0;
+}
+
+.mobileNavbar{
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100vw;
+    height: 6vh;
+    display: none;
+    justify-content: space-around;
+    background: rgb(109, 58, 58);
+    align-items: center;
+    position: sticky;
+    font-weight: bold;
+}
+.mobileNavbar svg{
+    height: 1.2rem;
+    width: 1.2rem;
+    cursor: pointer;
+}
+@media only screen and (max-width: 600px) {
+    .homeContainer_extraContainer {
+        display: none;
+    }
+    .homeContainer{
+        display: block;
+    }
+    .homeContainer_leftBar{
+        display: none;
+    }
+    .mobileNavbar{
+        display: flex;
+        bottom: 0;
+    }
+}

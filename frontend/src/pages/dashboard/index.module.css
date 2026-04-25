@@ -1,0 +1,235 @@
+.scrollComponent{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+.createPostContainer{
+    display: flex;
+    height: 10svh;
+    width: 80%;
+    background: rgba(252, 242, 242, 0.897);
+    justify-content: space-between;
+    align-items: center;
+    padding-inline: 0.8rem;
+    gap: 0.4rem;
+    border-radius: 10px;
+    position: relative;
+}
+.wrapper{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1.3rem;
+    width: 100%;
+}
+.userProfile{
+    border-radius: 100%;
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    margin-right: 0.3rem;
+    flex-shrink: 0;
+}
+.createPostContainer>textarea{
+    width: 100%;
+    height: 80%;
+    overflow: hidden;
+    resize: none;
+    border-radius: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.89);
+    padding: 0.7rem 0.8rem;
+    outline: none;
+    font-family:"poppins","sans-serif"
+}
+.Fab{
+    background: rgba(42, 139, 166, 0.678);
+    border-radius: 100%;
+    display: flex;
+    justify-content: center;
+}
+.Fab>svg{
+    height: 30px;
+    min-width: fit-content;
+    width: 30px;
+}
+.uploadButton{
+    position: absolute;
+    right: 0;
+    bottom: -30px;
+    color: white;
+    background: rgba(22, 103, 196, 0.715);
+    font-size: small;
+    padding-inline: 1rem;
+    padding-block: 0.4rem;
+    border-radius: 10px;
+    cursor: pointer;
+}
+.singleCard{
+    width: 100%;
+    padding-inline: 1rem;
+    border-radius: 10px;
+    border: 2px solid rgba(112, 110, 110, 0.324);
+    margin-bottom: 1rem;
+    background-color: rgba(227, 215, 230, 0.144);
+    margin-right: 2rem;
+    margin-top: 1rem;
+}
+.Profile_block{
+    display: flex;
+    gap: 1.2rem;
+}
+.singleCard_profileContainer{
+    padding-block: 0.5rem;
+    flex-shrink: 0;
+}
+.Profile_trash{
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+.NameBlock{
+    margin-top: 1rem;
+}
+
+/* ✅ FIXED: was oval due to width: 80% with auto height */
+.postUserProfile{
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.Name_trash{
+    color: brown;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    margin-top: 0.5rem;
+}
+.Name_trash:hover {
+    transform: scale(1.1);
+    color: red;
+}
+.postImage{
+    border-radius: 20px;
+    padding: 1rem;
+}
+.mediaContainer{
+    display: flex;
+    justify-content: center;
+    margin-bottom: 0.2rem;
+}
+.mediaContainer>img{
+    padding: 0.6rem;
+    width: 80%;
+    height: auto;
+    object-fit: cover;
+    padding: 0.5rem;
+}
+.ReactSection{
+    display: flex;
+    margin: 0 auto;
+    justify-content: space-around;
+    align-items: center;
+    width: 80%;
+    padding: 0.2rem;
+    margin-bottom: 0.4rem;
+    gap: 3rem;
+}
+.Option_react>svg{
+    height: 25px;
+    font-weight: bold;
+    cursor: pointer;
+}
+.Option_react{
+    display: flex;
+    gap: 4px;
+}
+.commentsContainer{
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+    left: 0;
+    z-index: 2;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    overflow: hidden;
+    justify-content: center;
+    align-items: center;
+}
+.allCommentsContainer{
+    width: 40vw;
+    height: 80vh;
+    background: rgb(235, 223, 223);
+    border-radius: 10px;
+    position: relative;
+    padding: 1.4rem;
+}
+.postCommentsContainer{
+    position: absolute;
+    bottom: 1.2rem;
+    left: 1.2rem;
+    width: 90%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.2rem;
+}
+.postCommentsContainer>input{
+    flex: 0.9;
+    padding-inline: 1.2rem;
+    padding-block: 1.2rem;
+    border: none;
+    outline: none;
+    border-radius: 10px;
+    color: black;
+    background-color: rgb(239, 229, 229);
+}
+.postCommentsContainer>input:focus{
+    border: 2px solid silver;
+}
+.postCommentsContainer_commentBtn{
+    flex: 0.1;
+    width: fit-content;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 2px solid rgba(0, 0, 0, 0.32);
+    padding: 0.5rem;
+    background-color: rgba(174, 163, 149, 0.568);
+}
+.postCommentsContainer_commentBtn>svg{
+    height: 25px;
+    cursor: pointer;
+}
+.postCommentsContainer_commentBtn>svg:hover{
+    transform: scale(1.1);
+    transition: all ease 1s;
+}
+.outerCommentBox{
+    margin-bottom: 1rem;
+    display: block;
+    background-color: rgb(184, 208, 200);
+    padding: 0.2rem;
+    border-radius: 10px;
+}
+.innerCommentBox{
+    display: flex;
+    font-size: 0.8rem;
+    gap: 0.6rem;
+    margin-bottom: 0.3rem;
+}
+.commentCardProfile{
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+@media screen and (max-width:600px){
+    .allCommentsContainer{
+        width: 80svh;
+    }
+}

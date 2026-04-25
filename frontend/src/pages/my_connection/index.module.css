@@ -1,0 +1,54 @@
+.userCard {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+  cursor: pointer;
+  box-sizing: border-box;
+  margin-bottom: 1rem;
+}
+
+.profilePicture > img {
+  width: 55px;
+  height: 55px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid #eee;
+  flex-shrink: 0;
+}
+
+.userInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  flex: 1;
+}
+
+.userInfo h2 {
+  font-size: 1rem;
+  margin: 0;
+}
+
+.userInfo p {
+  font-size: 0.85rem;
+  margin: 0;
+  color: gray;
+}
+
+.connectbtn {
+  padding: 0.4rem 1rem;
+  background-color: transparent;
+  border: 1px solid rgba(3, 93, 183, 0.905);
+  border-radius: 10px;
+  cursor: pointer;
+  color: rgba(3, 93, 183, 0.905);
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.connectbtn:hover {
+  background-color: rgba(3, 93, 183, 0.1);
+}
