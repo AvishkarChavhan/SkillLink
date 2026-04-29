@@ -32,6 +32,7 @@ app.use(UserRoutes);
 const start = async () => {
     try {
         await mongoose.connect(process.env.MONGO_URL);
+        console.log(process.env.MONGO_URL);
         app.listen(5000, () => {
             console.log("server is running on port 5000....");
         })
