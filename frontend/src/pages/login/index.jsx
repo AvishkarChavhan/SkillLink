@@ -18,15 +18,12 @@ function LoginComponent() {
   const [username, setUsername] = useState("");
   const [name, setName] = useState("");
 
-  // ✅ redirect if authState.LoggedIn becomes true
   useEffect(() => {
     if (authState.LoggedIn) {
       router.push("/dashboard");
     }
   }, [authState.LoggedIn, router]);
 
-  // ✅ Check only valid token after login succeeds, not before
-  // ✅ Remove stale token
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token && !authState.LoggedIn) {
@@ -34,7 +31,23 @@ function LoginComponent() {
     }
   }, []);
 
+  // ✅ After successful register switch to login automatically
+  useEffect(() => {
+    if (!authState.isError && authState?.message?.message === "user created") {
+      setUserLoginMethod(true); // ✅ switch to login tab
+      setEmailAddress("");
+      setPassword("");
+      setUsername("");
+      setName("");
+    }
+  }, [authState.message]);
+
   const handleRegister = () => {
+    // ✅ validate all fields before dispatching
+    if (!username || !name || !email || !password) {
+      alert("Please fill all fields");
+      return;
+    }
     dispatch(registerUser({ username, name, email, password }));
   };
 
@@ -66,12 +79,14 @@ function LoginComponent() {
               {!userLoginMethod && (
                 <div className={Styles.inputRow}>
                   <input
+                    value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     className={Styles.inputfield}
                     type="text"
                     placeholder="Username"
                   />
                   <input
+                    value={name}
                     onChange={(e) => setName(e.target.value)}
                     className={Styles.inputfield}
                     type="text"
@@ -81,12 +96,14 @@ function LoginComponent() {
               )}
 
               <input
+                value={email}
                 onChange={(e) => setEmailAddress(e.target.value)}
                 className={Styles.inputfield}
                 type="email"
                 placeholder="Email"
               />
               <input
+                value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className={Styles.inputfield}
                 type="password"
